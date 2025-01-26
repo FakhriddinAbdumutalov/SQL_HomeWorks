@@ -89,4 +89,30 @@ RuleConditionOperator varchar (50),
 ProjectRuleID int foreign key references iam_project_rules(ProjectRuleID))
 go
 
+--Hometask
+--Whenever a user enters blank ('', '  ') or null to F(address) it should automatically change it to Tashkent
+
+create table G(name varchar(50), address varchar(50), check(address is not null and trim(address) <> ''))
+
+insert into G values ('Romano', 'Italy')
+insert into G values ('Federico', 'Bilbao')
+insert into G values ('Sergio', null)
+
+CREATE TRIGGER trg_AddressDefault
+ON G
+INSTEAD OF INSERT, UPDATE
+AS
+BEGIN
+    -- Insert valid data, replacing NULL or blank addresses with 'Tashkent'
+    INSERT INTO G (name, address)
+    SELECT 
+        name,
+        CASE 
+            WHEN address IS NULL OR LTRIM(RTRIM(address)) = '' THEN 'Tashkent'
+            ELSE address
+        END
+    FROM inserted;
+END;
+GO
+
 
